@@ -53,6 +53,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import org.jmol.modelset.Atom;
+import org.jmol.util.Logger;
 
 class NBOSearch extends NBOView {
 
@@ -1166,6 +1167,46 @@ class NBOSearch extends NBOView {
           break;
       }
     }
+    //fzy
+    //this checking for "ok" doesn't work for DIPOLE, NRT and STERIC atom type operations too.
+    //user don't need to select any orbital to perform atom type operation
+    else if(keywordID==KEYWD_DIPOLE)
+    {
+      switch(optionSelected)
+      {
+        case 0:
+        case 1:
+        case 2:
+          isOK=true;
+          break;
+      }
+    }
+    else if(keywordID==KEYWD_STERIC)
+    {
+      switch(optionSelected)
+      {
+        case 0:
+        case 1:
+          isOK=true;
+      }
+    }
+    else if(keywordID==KEYWD_NRT)
+    {
+      switch(optionSelected)
+      {
+        case 0:
+        case 1:
+        case 2:
+          if(atom1!=null &&(cb = atom1).getSelectedIndex() > 0)
+          {
+              isOK=true;
+          }
+          break;
+      }
+    }
+    
+    
+    
   //fzy
     //This checking for "ok" doesn't work for B1B2. In particular, 
     //B1B2's max/min <AO,PNO> pair for current r needs user to input only r
