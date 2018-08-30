@@ -43,6 +43,31 @@ import java.util.Properties;
 @J2SIgnoreImport({java.util.Properties.class,java.io.BufferedInputStream.class})
 @J2SRequireImport({javajs.util.SB.class})
 public final class JC {
+  
+  public static final String     //         31    32    33    34    35    36    37    38    39    40    41
+  NBO_TYPES = ";"
+      + "AO;;;;" // 31
+      + "PNAO;;" // 32
+      + "NAO;;;" // 33
+      + "PNHO;;" // 34
+      + "NHO;;;" // 35
+      + "PNBO;;" // 36
+      + "NBO;;;" // 37
+      + "PNLMO;" // 38
+      + "NLMO;;" // 39
+      + "MO;;;;" // 40
+      + "NO;;;;" // 41
+      + ";;;;;;" // 42
+      + ";;;;;;" // 43
+      + "RNBO;" // 44
+      + "PRNBO;;" // 45
+      + "";
+  
+  public static int getNBOTypeFromName(String nboType) {
+    int pt = NBO_TYPES.indexOf(";" + nboType + ";");
+    return (pt < 0 ? pt : pt / 6 + 31);
+  }
+  
 
   // requires 8 bits for rule and type:        rrrba*SR
   public final static int CIP_CHIRALITY_UNKNOWN = 0;

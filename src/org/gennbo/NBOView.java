@@ -67,6 +67,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JFormattedTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
@@ -119,18 +123,21 @@ class NBOView {
   protected final int BASIS_PNLMO = 7;
   protected final int BASIS_NLMO = 8;
   protected final int BASIS_MO = 9;
+  protected final int BASIS_RNBO = 10;
+  protected final int BASIS_PRNBO = 11;
 
   protected final static String[] basSet = 
     { "AO",  // 0   
       "PNAO", "NAO",  // 1,2 
       "PNHO", "NHO",  // 3,4
       "PNBO", "NBO", "PNLMO", "NLMO", // 5-8 
-      "MO" }; // 9
+      "MO", // 9
+      "RNBO","PRNBO"}; // 10,11
 
   protected final static int[] basisLabelKey = 
-    {//AO   NAO    NHOab     NBOab     MO 
-        0,  1, 1,  2, 2,  3, 3, 3, 3,  4, // alpha
-        0,  1, 1,  5, 5,  6, 6, 6, 6,  4  // beta   
+    {//AO   NAO    NHOab     NBOab     MO  RNBO PRNBO
+        0,  1, 1,  2, 2,  3, 3, 3, 3,  4,    3,  3, // alpha
+        0,  1, 1,  5, 5,  6, 6, 6, 6,  4,    6,  6  // beta   
     };
   
   private String[][] orbitalLabels;
@@ -144,7 +151,7 @@ class NBOView {
   }
   
   private int getIbasKey(int ibas, boolean isBeta) {
-    return basisLabelKey[ibas + (isBeta ? 10 : 0)];
+    return basisLabelKey[ibas + (isBeta ? 12 : 0)];
   }
   private void addBasisLabel(int ikey, String[] tokens) {
     orbitalLabels[ikey] = tokens;
@@ -209,7 +216,7 @@ class NBOView {
   
   private boolean validScriptFilePath, validGifFilePath;
   
-  private JComboBox<String> dropDownMenu;
+  private JSpinner spinner;
   private int frameRate;
   
   private String scriptVideoPath, gifVideoPath;
@@ -487,31 +494,21 @@ class NBOView {
     return fileHandler;
   }
   
-  private void createDropDownMenuForGIFCreation()
+  private void createIncrementerDecrementerForGIFCreation()
   {
-    String[] frameRate= {"Select frames/sec","20","40","60","80","100"};
-    dropDownMenu=new JComboBox<String>(frameRate);
-    dropDownMenu.setPrototypeDisplayValue("Select frames/sec");
-    dropDownMenu.addActionListener(new ActionListener()
-    {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        doDropDownMenuAction(dropDownMenu.getSelectedIndex()>0? dropDownMenu.getSelectedItem().toString():"-1");
-      }
-    });
+                                               //initial value  min   max    step
+    SpinnerModel spinnerModel=new SpinnerNumberModel(10,        0,    1000,   1 );
+    spinner=new JSpinner(spinnerModel);
   }
   
-  private void doDropDownMenuAction(String num)
+  private void computeFrameRate(String num)
   {
     int number=Integer.parseInt(num);
+
     if(number==-1)
       frameRate=-1;
     else
-    {
-      frameRate=1/number;
-      frameRate=frameRate*1000;
-    }
+      frameRate=(int)((1.0/number)*1000);
   }
   
   /*
@@ -587,16 +584,30 @@ class NBOView {
     fileHandlerPanel.add(gifVideoFileHandler);
     
     ////////////////////////////////panel for storing radio buttons
-    createDropDownMenuForGIFCreation();
-    JPanel buttonPanel=new JPanel(new GridLayout(4,1,0,0));
-    buttonPanel.setMaximumSize(new Dimension(250, 150));
-    buttonPanel.setPreferredSize(new Dimension(250, 150));
-    buttonPanel.setMinimumSize(new Dimension(250, 150));
-    buttonPanel.setAlignmentX(0);
-    buttonPanel.add(createVideo);
-    buttonPanel.add(saveVideo);
-    buttonPanel.add(dropDownMenu);
-    buttonPanel.add(playVideo);
+    createIncrementerDecrementerForGIFCreation();
+    JPanel buttonPanel_1=new JPanel(new GridLayout(2,1,0,0));
+//    buttonPanel_1.setMaximumSize(new Dimension(250, 150));
+//    buttonPanel_1.setPreferredSize(new Dimension(250, 150));
+//    buttonPanel_1.setMinimumSize(new Dimension(250, 150));
+    buttonPanel_1.setAlignmentX(0);
+    buttonPanel_1.add(createVideo);
+    buttonPanel_1.add(saveVideo);
+    
+    JPanel buttonPanel_2=new JPanel(new GridLayout(1,3,0,0));
+    buttonPanel_2.setMaximumSize(new Dimension(225,40));
+    buttonPanel_2.setMinimumSize(new Dimension(225,40));
+    buttonPanel_2.setPreferredSize(new Dimension(225,40));
+    buttonPanel_2.setAlignmentX(0);
+    JLabel frame_sec=new JLabel(" frames/sec");
+    
+    buttonPanel_2.add(new JLabel("  ")); //add empty jlabel to move jspinner a little bit to the right (not stick right to left)
+    buttonPanel_2.add(spinner);
+    buttonPanel_2.add(frame_sec);
+    
+    
+    JPanel buttonPanel_3=new JPanel(new GridLayout(1,1,0,0));
+    buttonPanel_3.setAlignmentX(0);
+    buttonPanel_3.add(playVideo);
     
     
     JPanel goPanel=new JPanel(new BorderLayout());
@@ -618,7 +629,9 @@ class NBOView {
     Box box2 = Box.createVerticalBox();
     
     box2.add(fileHandlerPanel);
-    box2.add(buttonPanel);
+    box2.add(buttonPanel_1);
+    box2.add(buttonPanel_2);
+    box2.add(buttonPanel_3);
     box.add(box2);
     box2.setAlignmentX(0.0f);
     box.add(goPanel);
@@ -638,7 +651,10 @@ class NBOView {
     if(createVideo.isSelected())
       createVideo();
     else if(saveVideo.isSelected())
+    {
+      computeFrameRate(String.valueOf(spinner.getModel().getValue()));
       saveVideo();
+    }
     else if(playVideo.isSelected())
       playVideo();
     
@@ -733,7 +749,7 @@ class NBOView {
     
     
     File bmpFiles[]=finder(folder,name);
-    int timeBetweenFrameInMS=frameRate;
+    int timeBetweenFrameInSecond=frameRate;
     int i;
     GIFWriter writer=null;
     ImageOutputStream output=null;
@@ -748,7 +764,7 @@ class NBOView {
     {
       BufferedImage firstImage=ImageIO.read(bmpFiles[0]);
       output=new FileImageOutputStream(new File(gifVideoPath));
-      writer=new GIFWriter(output,firstImage.getType(),timeBetweenFrameInMS,true);
+      writer=new GIFWriter(output,firstImage.getType(),timeBetweenFrameInSecond,true);
       writer.writeToSequence(firstImage);
       for(i=1;i<bmpFiles.length;i++)
       {
@@ -1896,6 +1912,8 @@ class NBOView {
       case BASIS_PNBO:
       case BASIS_NBO:
       case BASIS_PNLMO:
+      case BASIS_RNBO:
+      case BASIS_PRNBO:
       case BASIS_NLMO: {
         String sat1 = vwr.ms.at[at1 - 1].getElementSymbol() + at1;
         String sat2 = vwr.ms.at[at2 - 1].getElementSymbol() + at2;

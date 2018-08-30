@@ -39,6 +39,7 @@ import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.quantum.QS;
 import org.jmol.util.Logger;
+import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -106,6 +107,8 @@ public class GenNBOReader extends MOReader {
        * molname.39 NLMO 
        * molname.40 MO 
        * molname.41 AO density matrix 
+       * molname.44 RNBO
+       * molname.45 PRNBO
        * molname.46 Basis label file
        * molname.47 archive file
        * molname.nbo output file
@@ -742,8 +745,7 @@ public class GenNBOReader extends MOReader {
     }
 
     public static boolean readNBOCoefficients(Map<String, Object> moData, String nboType, Viewer vwr) {
-        int ext = ";AO;  ;PNAO;;NAO; ;PNHO;;NHO; ;PNBO;;NBO; ;PNLMO;NLMO;;MO;  ;NO;".indexOf(";" + nboType + ";");
-        ext = ext / 6 + 31;
+        int ext = JC.getNBOTypeFromName(nboType);
         boolean isAO = nboType.equals("AO");
         boolean isNBO = nboType.equals("NBO");
         
