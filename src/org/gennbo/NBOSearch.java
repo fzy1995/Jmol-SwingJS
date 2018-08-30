@@ -32,6 +32,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Arrays;
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -396,7 +397,7 @@ class NBOSearch extends NBOView {
     optionBox.add(optionBox2);
     panel.add(optionBox);
 
-    comboBasis1 = new JComboBox<String>(NBOView.basSet);
+    comboBasis1 = new JComboBox<String>(Arrays.copyOfRange(NBOView.basSet, 0, 10));
     //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
 
     dialog.inputFileHandler.setBrowseEnabled(true);
@@ -671,7 +672,7 @@ class NBOSearch extends NBOView {
     case KEYWD_OPBAS:
       load(31, true);
       dialog.viewSettingsBox.removeAll();
-      comboBasis1 = new JComboBox<String>(NBOView.basSet);
+      comboBasis1 = new JComboBox<String>(Arrays.copyOfRange(NBOView.basSet, 0, 10));
       //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
       comboBasis1.setEditable(false);
       comboBasisOperation.requestFocus();
@@ -835,7 +836,7 @@ class NBOSearch extends NBOView {
         }
         innerListPanel.add(b);
       } else if (key.equals("b2")) {
-        comboBasis2 = new JComboBox<String>(NBOView.basSet);
+        comboBasis2 = new JComboBox<String>(Arrays.copyOfRange(NBOView.basSet, 0, 10));
         //comboBasis2.setUI(new StyledComboBoxUI(180, -1));
         comboBasis2.setSelectedIndex(1);
         comboBasis2.addActionListener(new ActionListener() {
