@@ -123,8 +123,8 @@ class NBOView {
   protected final int BASIS_PNLMO = 7;
   protected final int BASIS_NLMO = 8;
   protected final int BASIS_MO = 9;
-  protected final int BASIS_RNBO = 10;
-  protected final int BASIS_PRNBO = 11;
+  protected final int BASIS_PRNBO = 10;
+  protected final int BASIS_RNBO = 11;
 
   protected final static String[] basSet = 
     { "AO",  // 0   
@@ -132,10 +132,10 @@ class NBOView {
       "PNHO", "NHO",  // 3,4
       "PNBO", "NBO", "PNLMO", "NLMO", // 5-8 
       "MO", // 9
-      "RNBO","PRNBO"}; // 10,11
+      "PRNBO","RNBO"}; // 10,11
 
   protected final static int[] basisLabelKey = 
-    {//AO   NAO    NHOab     NBOab     MO  RNBO PRNBO
+    {//AO   NAO    NHOab     NBOab     MO  PRNBO RNBO
         0,  1, 1,  2, 2,  3, 3, 3, 3,  4,    3,  3, // alpha
         0,  1, 1,  5, 5,  6, 6, 6, 6,  4,    6,  6  // beta   
     };
@@ -1912,8 +1912,8 @@ class NBOView {
       case BASIS_PNBO:
       case BASIS_NBO:
       case BASIS_PNLMO:
-      case BASIS_RNBO:
       case BASIS_PRNBO:
+      case BASIS_RNBO:
       case BASIS_NLMO: {
         String sat1 = vwr.ms.at[at1 - 1].getElementSymbol() + at1;
         String sat2 = vwr.ms.at[at2 - 1].getElementSymbol() + at2;

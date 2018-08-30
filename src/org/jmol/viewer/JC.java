@@ -58,9 +58,9 @@ public final class JC {
       + "MO;;;;" // 40
       + "NO;;;;" // 41
       + ";;;;;;" // 42
-      + ";;;;;;" // 43
-      + "RNBO;" // 44
-      + "PRNBO;;" // 45
+      + "PRNBO;" // 43
+      + "RNBO;;" // 44
+      + ";;;;;;" // 45
       + "";
   
   public static int getNBOTypeFromName(String nboType) {

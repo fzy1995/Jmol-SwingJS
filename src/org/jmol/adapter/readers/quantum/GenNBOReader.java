@@ -107,8 +107,8 @@ public class GenNBOReader extends MOReader {
        * molname.39 NLMO 
        * molname.40 MO 
        * molname.41 AO density matrix 
+       * molname.43 PRNBO
        * molname.44 RNBO
-       * molname.45 PRNBO
        * molname.46 Basis label file
        * molname.47 archive file
        * molname.nbo output file
