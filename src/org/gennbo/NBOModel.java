@@ -1508,6 +1508,8 @@ class NBOModel {
    */
   protected void processNBO(int mode, NBORequest req) {
     String s = req.getReply();
+    if((s.trim()).equals(""))
+      return;
     boolean doClear = true;
     switch (mode) {
     case MODEL_ACTION_ALTER:
