@@ -506,6 +506,7 @@ class NBOSearch extends NBOView {
       postListRequest("d'", comboSearchOrb2);
       break;
     case KEYWD_CMO:
+      postListRequest("c", comboSearchOrb2);
       postListRequest("n", comboSearchOrb1);
       if (radioOrbMO.isSelected())
         radioOrbMO.doClick();
