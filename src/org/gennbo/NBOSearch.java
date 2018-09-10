@@ -740,44 +740,12 @@ class NBOSearch extends NBOView {
         comboSearchOrb1 = new JComboBox<String>(
             new DefaultComboBoxModel<String>());
         setComboSearchOrbDefaultAction(key);
-        innerListPanel.add(comboSearchOrb1);
-        
-        //fzy
-        //TODO: INCOMPLETE
-        if(items[i]=="d nbo")
-        {
-          ButtonGroup donorButtonGroup=new ButtonGroup();
-          JRadioButton donorPositive = new JRadioButton("+");
-          donorPositive.setSelected(true);
-          donorPositive.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-
-            }
-          });
-          donorPositive.setBackground(null);
-          JRadioButton donorNegative = new JRadioButton("-");
-          donorNegative.setSelected(true);
-          donorNegative.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-
-            }
-          });
-          donorNegative.setBackground(null);
-          
-          donorButtonGroup.add(donorPositive);
-          donorButtonGroup.add(donorNegative);
-        }
+        innerListPanel.add(comboSearchOrb1);       
         postListRequest(key, comboSearchOrb1);
       } else if (PT.isOneOf(items[i], "c;d' nlmo;a nbo;c cmo;o PNAO")) {
         comboSearchOrb2 = new JComboBox<String>(
             new DefaultComboBoxModel<String>());
         postListRequest(key, comboSearchOrb2);
-        if(items[i]=="a nbo")
-        {
-          
-        }
         setComboSearchOrb2DefaultAction(key, items[i]);
         innerListPanel.add(comboSearchOrb2);
       } else if (key.equals("u")) {
