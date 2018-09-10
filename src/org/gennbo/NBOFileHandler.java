@@ -403,13 +403,57 @@ class NBOFileHandler extends JPanel {
       return null;
     String fileName47 = inputFile.getAbsolutePath();
     
+    File copyFile47=new File(fileName47+"$");
+    FileInputStream originalFileReader=null;
+    FileOutputStream copyFileWriter=null;
+    if(isRun)
+    {
+      try
+      {
+        if(!copyFile47.exists())
+        {
+          copyFile47.createNewFile();
+          copyFileWriter=new FileOutputStream(copyFile47);
+        }
+        else
+        {
+          copyFileWriter=new FileOutputStream(copyFile47,false);
+        }
+        File originalFile47=new File(fileName47);
+        originalFileReader=new FileInputStream(originalFile47);
+        //just a threshold to ensure that the original file 47 that we are going to copy isn't corrupted at the first place
+        if(originalFileReader.getChannel().size()>50000)
+          copyFileWriter.getChannel().transferFrom(originalFileReader.getChannel(),0,originalFileReader.getChannel().size());
+      }
+      catch(IOException ex)
+      {
+        dialog.logInfo("Could not create copy for file 47. Update to file 47 aborted.", Logger.LEVEL_ERROR);
+        return null;
+      }
+      finally
+      {
+        try
+        {
+          if(originalFileReader!=null)
+            originalFileReader.close();
+          if(copyFileWriter!=null)
+            copyFileWriter.close();
+        }
+        catch(IOException ex)
+        {
+          dialog.logInfo("Could not close file " + fileName47+"$. Update to file 47 aborted.", Logger.LEVEL_ERROR);
+          return null;
+        }
+      }
+    }
+    
     String[] fileData = read47File(true);
-    String oldData = (isRun ? getFileData(fileName47) : null);
+//    String oldData = (isRun ? getFileData(fileName47) : null);
         
     if (writeToFile(inputFile.getAbsolutePath(), fileData[0] + "$NBO\n "
         + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
-      if (oldData != null)
-        writeToFile(fileName47 + "$", oldData);
+//      if (oldData != null)
+//        writeToFile(fileName47 + "$", oldData);
       fileData[1] = keywords;
       fileData[3] = "FILE=" + jobName + " " + keywords; 
       dialog.runPanel.doLogJobName(jobName);

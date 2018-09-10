@@ -259,7 +259,7 @@ public class NBODialog extends JDialog {
     runPanel = new NBORun(this);
     viewPanel = searchPanel = new NBOSearch(this);
     
-    filecopy=new ArrayList<File47AndFileCopy>();
+//    filecopy=new ArrayList<File47AndFileCopy>();
     
     createDialog(jmolFrame);
 
@@ -366,7 +366,7 @@ public class NBODialog extends JDialog {
 
     viewPanel.resetCurrentOrbitalClicked();
     resetVariables_c();
-    restore47filesFromFileCopy();
+//    restore47filesFromFileCopy();
     
   }
 
@@ -806,7 +806,7 @@ public class NBODialog extends JDialog {
   }
 
   public void close() {
-    restore47filesFromFileCopy();
+//    restore47filesFromFileCopy();
     removeAll48Files();
     if (modulePanel != null)
       inputFileHandler.clearInputFile(false);
