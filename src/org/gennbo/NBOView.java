@@ -137,13 +137,13 @@ class NBOView {
   protected final static int[] basisLabelKey = 
     {//AO   NAO    NHOab     NBOab     MO  PRNBO RNBO
         0,  1, 1,  2, 2,  3, 3, 3, 3,  4,    3,  3, // alpha
-        0,  1, 1,  5, 5,  6, 6, 6, 6,  4,    6,  6  // beta   
+        0,  1, 1,  5, 5,  6, 6, 6, 6,  7,    6,  6  // beta   
     };
   
   private String[][] orbitalLabels;
   
   private void clearLabelSet() {
-    orbitalLabels = new String[7][];
+    orbitalLabels = new String[8][];
   }
 
   private String[] getLabelSet(int ibas, boolean isAlpha) {
@@ -945,35 +945,31 @@ class NBOView {
     betaSpin = new JRadioButton("<html>&#x3B2</html>");
     alphaSpin = new JRadioButton("<html>&#x3B1</html>");
     alphaSpin.setSelected(true);
+
+    ActionListener spinListener = new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent event) {
+
+        //        if (type != null) {
+//          dialog.doSetStructure(type);
+//        }
+
+        if (NBOConfig.nboView) {
+          dialog.runScriptQueued("select *;color bonds lightgrey");
+        }
+
+        doSetNewBasis(false, true);
+
+        
+        
+//        doSetSpin(event.getSource() == alphaSpin ? "alpha" : "beta");
+      }
+    };
+    alphaSpin.addActionListener(spinListener);
+    betaSpin.addActionListener(spinListener);
     ButtonGroup spinSelection = new ButtonGroup();
     spinSelection.add(alphaSpin);
-    spinSelection.add(betaSpin);
-    betaSpin.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        EventQueue.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            doSetSpin(isAlphaSpin() ? null : "beta");
-          }
-
-        });
-      }
-    });
-    alphaSpin.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        EventQueue.invokeLater(new Runnable() {
-
-          @Override
-          public void run() {
-            doSetSpin(isAlphaSpin() ? "alpha" : null);
-          }
-
-        });
-      }
-    });
+    spinSelection.add(betaSpin);    
     horizBox.add(alphaSpin);
     horizBox.add(betaSpin);
     alphaSpin.setVisible(dialog.isOpenShell());
@@ -1649,13 +1645,12 @@ class NBOView {
     }
     if (dialog.jmolOptionNONBO) 
       return f;
-    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"),
+    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true,true), "LABEL"),
        MODE_VIEW_LIST, getIbasKey(ibasis, isBeta), list, "Getting list", null, null);
     return null;
   }
 
   /////////////////////// RAW NBOSERVE API ////////////////////
-
   /**
    * get the standard header for a set of META commands, specifically C_PATH and
    * C_JOBSTEM and I_SPIN; possibly I_BAS_1
@@ -1666,15 +1661,18 @@ class NBOView {
    * @return a new string buffer using javajs.util.SB
    * 
    */
-  protected SB getMetaHeader(boolean addBasis) {
+  protected SB getMetaHeader(boolean addBasis,boolean addPathAndJobStem) {
     SB sb = new SB();
-    NBOUtil.postAddGlobalC(sb, "PATH",
-        dialog.inputFileHandler.inputFile.getParent());
-    NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
+    if (addPathAndJobStem) {
+      NBOUtil.postAddGlobalC(sb, "PATH",
+          dialog.inputFileHandler.inputFile.getParent());
+      NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
+    }
     if (addBasis)
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
-    NBOUtil.postAddGlobalI(sb, "SPIN",
-        (!dialog.isOpenShell() ? 0 : isAlphaSpin() ? 1 : -1), null);
+    System.out.println("VIEW spin " + dialog.isOpenShell() + " " + isAlphaSpin());
+    NBOUtil.postAddGlobalI(sb, "SPIN", (!dialog.isOpenShell() ? 0
+        : isAlphaSpin() ? 1 : -1), null);
     return sb;
   }
 
@@ -1717,7 +1715,7 @@ class NBOView {
 
     // ? needed ? sendJmolOrientation();
 
-    SB sb = getMetaHeader(true);
+    SB sb = getMetaHeader(true,true);
 
     int ind = orbitals.bsOn.nextSetBit(0);
 
@@ -1767,7 +1765,7 @@ class NBOView {
 
     // I do not understand why a LABEL command has to be given here. A bug? 
 
-    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"),
+    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true,true), "LABEL"),
         NBOService.MODE_RAW, -1, null, "", "jview.txt", sb.toString());
 
     postNBO_v(NBOUtil.postAddCmd(new SB(), "JVIEW"), NBOService.MODE_RAW, -1, null,
@@ -1781,7 +1779,7 @@ class NBOView {
   
   private void setAtomsView()
   {
-    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"),
+    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true,true), "LABEL"),
         NBOService.MODE_RAW, -1, null, "", null,null);
     
     postNBO_v(NBOUtil.postAddCmd(new SB(), "AVIEW"), NBOService.MODE_RAW, -1, null,
@@ -1800,7 +1798,7 @@ class NBOView {
     String profileList = "";
     for (int pt = 0, i = orbitals.bsOn.nextSetBit(0); i >= 0; i = orbitals.bsOn
         .nextSetBit(i + 1)) {
-      sb = getMetaHeader(true);
+      sb = getMetaHeader(true,true);
       appendOrbitalPhaseSign(sb, i);
       NBOUtil.postAddCmd(sb, (oneD ? "PROFILE " : "CONTOUR ") + (i + 1));
       msg += " " + (i + 1);
@@ -1808,7 +1806,7 @@ class NBOView {
       postNBO_v(sb, NBOService.MODE_RAW, -1, null, "Sending " + msg, null, null);
     }
     dialog.logCmd(msg);
-    sb = getMetaHeader(false);
+    sb = getMetaHeader(false,true);
     appendLineParams(sb);
     NBOUtil.postAddCmd(sb, "DRAW" + profileList);
     postNBO_v(sb, MODE_VIEW_IMAGE, -1, null, "Drawing...", null, null);
@@ -1817,7 +1815,7 @@ class NBOView {
   protected void createImage3D() {
     if(jmolView)
     {
-      postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"),
+      postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true,true), "LABEL"),
           NBOService.MODE_RAW, -1, null, "", null, null);
       
       postNBO_v(NBOUtil.postAddCmd(new SB(), "JVIEW"), NBOService.MODE_RAW, -1, null,
@@ -1833,7 +1831,7 @@ class NBOView {
     String list = "";
     BS bs = orbitals.bsOn;
     for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-      sb = getMetaHeader(true);
+      sb = getMetaHeader(true,true);
       appendOrbitalPhaseSign(sb, i);
       NBOUtil.postAddCmd(sb, "PROFILE " + (i + 1));
       postNBO_v(sb, NBOService.MODE_RAW, -1, null, "Sending profile " + (i + 1),
@@ -1845,7 +1843,7 @@ class NBOView {
     String jviewData = sb.toString();
     // BH: It turns out it is CRITICAL that if you send camera parameters, you MUST NOT SEND basis information.
     // (no idea why!)
-    sb = getMetaHeader(false);
+    sb = getMetaHeader(false,true);
     appendCameraParams(sb);
     NBOUtil.postAddCmd(sb, "VIEW" + list);
     postNBO_v(sb, MODE_VIEW_IMAGE, -1, null, "Raytracing...", null, jviewData);
@@ -2105,7 +2103,7 @@ class NBOView {
   }
   
   protected boolean isAlphaSpin() {
-   return alphaSpin.isSelected() || !alphaSpin.isVisible();
+   return !(betaSpin.isVisible() && betaSpin.isSelected());
   }
 
 
@@ -2126,7 +2124,8 @@ class NBOView {
 
     protected BS bsOn = new BS();
     protected BS bsNeg = new BS();
-    protected BS bsKnown = new BS();
+    protected BS bsKnownAlpha = new BS();
+    protected BS bsKnownBeta=new BS();
 
     public OrbitalList() {
       super();
@@ -2218,7 +2217,8 @@ class NBOView {
      * @param clearAll
      */
     void clearOrbitals(boolean clearAll) {
-      bsKnown.clearAll();
+      bsKnownAlpha.clearAll();
+      bsKnownBeta.clearAll();
       if (clearAll) {
         bsOn.clearAll();
         bsNeg.clearAll();
@@ -2247,35 +2247,35 @@ class NBOView {
      */
     protected void updateIsosurfacesInJmol(int iClicked) {
       DefaultListModel<String> model = (DefaultListModel<String>) getModel();
-      boolean isBeta = betaSpin.isSelected();
       String type = comboBasis1.getSelectedItem().toString();
       String script = "select 1.1;";
       if (iClicked == Integer.MAX_VALUE)
         script += updateBitSetFromModel();
       else
         updateModelFromBitSet();
-      //System.out.println("update " + bsOn + " " + bsKnown + " " +  iClicked);
+      boolean isBeta = !isAlphaSpin();
       for (int i = 0, n = model.getSize(); i < n; i++) {
         boolean isOn = bsOn.get(i);
-        if (i == iClicked || isOn && !bsKnown.get(i)
+        if (i == iClicked || isOn && !isKnownIsosurface(i)
             || isSelectedIndex(i) != isOn) {
-          String id = "mo" + i;
-          if (!isOn || bsKnown.get(i)) {
+          String id = "mo" + i + (isBeta ? "beta" : "");
+          if (!isOn || isKnownIsosurface(i)) {
             if (isOn && bsNeg.get(i)) {
-              bsKnown.clear(i);
+              setKnownIsosurface(i, false);
               bsNeg.clear(i);
             }
             bsOn.setBitTo(i, isOn = !isOn);
           }
-          boolean isKnown = bsKnown.get(i);
           if (!bsOn.get(i)) {
             // just turn it off
-            script += "isosurface mo" + i + " off;";
-          } else if (isKnown) {
-            // just turn it on
-            script += "isosurface mo" + i + " on;";
+            script += "isosurface " + id + " off;";
+          } else if (isKnownIsosurface(i)) {
+            // just turn it on - no?
+            script += "isosurface " + id + " on;";
+            //script += NBOConfig.getJmolIsosurfaceScript(id, type, i + 1,
+              // isBeta, bsNeg.get(i));
           } else {
-            bsKnown.set(i);
+            setKnownIsosurface(i, true);
             // create the isosurface
             script += NBOConfig.getJmolIsosurfaceScript(id, type, i + 1,
                 isBeta, bsNeg.get(i));
@@ -2287,8 +2287,7 @@ class NBOView {
 //        }
       }
       updateModelFromBitSet();
-      dialog.runScriptQueued(script);
-      //System.out.println("known" + bsKnown + " on" + bsOn + " neg" + bsNeg + " " + script);
+      dialog.runScriptQueued(script);       
     }
 
     private String updateBitSetFromModel() {
@@ -2391,13 +2390,20 @@ class NBOView {
         toggled = true;
         // toggle:
         bsNeg.setBitTo(i, !bsNeg.get(i));
-        bsKnown.clear(i); // to - just switch colors?
-        //        toggleOrbitalNegation(i);
+        setKnownIsosurface(i, false);
         repaint();
       }
 
     }
+    
+    private void setKnownIsosurface(int i, boolean isON) {
+      (isAlphaSpin() ? bsKnownAlpha : bsKnownBeta).setBitTo(i,  isON);      
+    }
 
+    private boolean isKnownIsosurface(int i) {
+      return (isAlphaSpin() ? bsKnownAlpha : bsKnownBeta).get(i);
+    }
+    
     @Override
     public void mouseClicked(MouseEvent e) {
     }

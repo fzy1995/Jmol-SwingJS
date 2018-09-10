@@ -1024,7 +1024,7 @@ class NBOSearch extends NBOView {
     String labelOrb1 = "ORB_1", labelOrb2 = "ORB_2", labelAtom1 = "ATOM_1", labelAtom2 = "ATOM_2", labelUnit1 = "UNIT_1";
     int offset1 = 0, offset2 = 0;
 
-    final SB sb = getMetaHeader(false);
+    final SB sb = getMetaHeader(false,true);
     NBOUtil.postAddGlobalI(sb, "KEYWORD", keywordID, null);
     boolean isLabelAtom = false;
     boolean isLabelBonds = false;
@@ -1666,7 +1666,7 @@ class NBOSearch extends NBOView {
    */
   private void postListRequest(String cmd_basis, JComboBox<String> cb) {
     int mode = MODE_SEARCH_LIST;
-    SB sb = getMetaHeader(false);
+    SB sb = getMetaHeader(false,true);
     String cmd;
     if (keywordID == KEYWD_OPBAS || keywordID == KEYWD_BAS1BAS2) {
       cmd = "LABEL";

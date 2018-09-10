@@ -332,7 +332,7 @@ class NBORun {
     }
     String name = tfJobName.getText().trim();
     name = dialog.inputFileHandler.fixJobName(name);
-    dialog.inputFileHandler.update47File(name, keywords);
+    dialog.inputFileHandler.update47File(name, keywords,false);
     addNBOKeylist();
     tfJobName.setText(name);
     editBox.repaint();
@@ -732,7 +732,7 @@ class NBORun {
     jobName = (jobName.equals("") ? dialog.inputFileHandler.jobStem : jobName);
 
     String[] fileData = dialog.inputFileHandler.update47File(jobName,
-        newKeywords);
+        newKeywords,true);
     if (fileData == null)
       return;
     SB sb = new SB();
