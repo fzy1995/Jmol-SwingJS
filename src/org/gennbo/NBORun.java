@@ -739,7 +739,9 @@ class NBORun {
     NBOUtil.postAddGlobalC(sb, "PATH",
         dialog.inputFileHandler.inputFile.getParent());
     NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
-    NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
+    //fzy: removed on the request of professor frank. Jmol shouldn't force NBOServe to restart gennbo.
+    //gennbo will do it itself.
+//    NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
     NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
 
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "

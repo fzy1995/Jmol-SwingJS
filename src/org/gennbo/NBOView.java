@@ -42,6 +42,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javajs.swing.SwingConstants;
 import javajs.util.PT;
@@ -98,6 +100,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.net.URL;
+import java.nio.file.Paths;
 
 class NBOView {
 
@@ -221,6 +224,9 @@ class NBOView {
   
   private String scriptVideoPath, gifVideoPath;
   public String savevideo_jobstem;
+  
+  private boolean file43Exists;
+  private boolean file44Exists;
  
   
   /**
@@ -939,7 +945,30 @@ class NBOView {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (comboBasis1.isEnabled())
+        {
+          boolean isBeta = dialog.isOpenShell() && !isAlphaSpin();
+          if(comboBasis1.getSelectedIndex()==BASIS_PRNBO)
+          {
+            if(!file43Exists)
+            {
+              dialog.logCmd("select " + comboBasis1.getSelectedItem() + " "
+                  + (isBeta ? "beta" : dialog.isOpenShell() ? "alpha" : ""));
+              dialog.logInfo("NBOPro can't do that. ", Logger.LEVEL_WARN);
+              return;
+            }
+          }
+          else if(comboBasis1.getSelectedIndex()==BASIS_RNBO)
+          {
+            if(!file44Exists)
+            {
+              dialog.logCmd("select " + comboBasis1.getSelectedItem() + " "
+                  + (isBeta ? "beta" : dialog.isOpenShell() ? "alpha" : ""));
+              dialog.logInfo("NBOPro can't do that. ", Logger.LEVEL_WARN);
+              return;
+            }
+          }
           doSetNewBasis(false, true);
+        }
       }
     });
     betaSpin = new JRadioButton("<html>&#x3B2</html>");
@@ -2480,6 +2509,19 @@ class NBOView {
     String[] lines = req.getReplyLines();
     switch (mode) {
     case MODE_VIEW_LIST:
+      file43Exists=checkIfCurrentJobStemFileExists(43);
+      file44Exists=checkIfCurrentJobStemFileExists(44);
+//      if(file43Exists && file44Exists)
+//        comboBasis1 = new JComboBox<String>(basSet);
+//      else if(file43Exists)
+//        comboBasis1 = new JComboBox<String>(Arrays.copyOfRange(basSet, 0, 11));
+//      //cannot handle the case of !file43.exists and file44.exists
+//      //in this case, we will just show [AO,PNAO,NAO,PNHO,NHO,PNBO,NBO,PNLMO,NLMO,MO] 
+//      else
+//        comboBasis1 = new JComboBox<String>(Arrays.copyOfRange(basSet, 0, 10));
+//      comboBasis1.revalidate();
+//      comboBasis1.repaint();
+
       addBasisLabel(ikey, lines);
       orbitals.loadList(lines, list);
       break;
@@ -2500,6 +2542,18 @@ class NBOView {
     }
   }
   
+  //check if file <current jobstem.argument extension> exists in user work directory
+  private boolean checkIfCurrentJobStemFileExists(int fileExtension)
+  {
+    Path filePath=null;
+    if(fileExtension==43)
+      filePath=Paths.get(dialog.getWorkingPath(),dialog.inputFileHandler.jobStem+".43");
+    else if(fileExtension==44)
+      filePath=Paths.get(dialog.getWorkingPath(),dialog.inputFileHandler.jobStem+".44");
+    
+    File f=new File(filePath.toString());
+    return f.exists() && !f.isDirectory();
+  }
  
 }
 
