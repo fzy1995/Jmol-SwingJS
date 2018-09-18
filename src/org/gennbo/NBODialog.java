@@ -259,7 +259,7 @@ public class NBODialog extends JDialog {
     runPanel = new NBORun(this);
     viewPanel = searchPanel = new NBOSearch(this);
     
-//    filecopy=new ArrayList<File47AndFileCopy>();
+    filecopy=new ArrayList<File47AndFileCopy>();
     
     createDialog(jmolFrame);
 
@@ -366,6 +366,7 @@ public class NBODialog extends JDialog {
 
     viewPanel.resetCurrentOrbitalClicked();
     resetVariables_c();
+    //When switching modules, no need to restore 47 files from filecopy
 //    restore47filesFromFileCopy();
     
   }
@@ -806,7 +807,7 @@ public class NBODialog extends JDialog {
   }
 
   public void close() {
-//    restore47filesFromFileCopy();
+    restore47filesFromFileCopy();
     removeAll48Files();
     if (modulePanel != null)
       inputFileHandler.clearInputFile(false);
@@ -1255,6 +1256,18 @@ public class NBODialog extends JDialog {
 
   }
   
+  
+  boolean backupFileExists(String jobName)
+  {
+    int i;
+    for(i=0;i<filecopy.size();i++)
+    {
+      File47AndFileCopy pair=filecopy.get(i);
+      if(pair.getJobname().equals(jobName))
+        return true;
+    }
+    return false;
+  }
   void insertNewFileCopy(File47AndFileCopy filePair)
   {
     if(filePair!=null)
@@ -1279,9 +1292,9 @@ public class NBODialog extends JDialog {
       String file47_path=filePair.getFile47();
       String fileCopy_path=filePair.getFilecopy();
       
-      File filecopy=new File(fileCopy_path);
       File file47=new File(file47_path);
-    
+      File filecopy=new File(fileCopy_path);
+      
       try
       {
         sourceFilecopy=new FileInputStream(filecopy);

@@ -406,7 +406,7 @@ class NBOFileHandler extends JPanel {
     File copyFile47=new File(fileName47+"$");
     FileInputStream originalFileReader=null;
     FileOutputStream copyFileWriter=null;
-    if(isRun)
+    if(isRun && !dialog.backupFileExists(jobName))
     {
       try
       {
@@ -422,8 +422,10 @@ class NBOFileHandler extends JPanel {
         File originalFile47=new File(fileName47);
         originalFileReader=new FileInputStream(originalFile47);
         //just a threshold to ensure that the original file 47 that we are going to copy isn't corrupted at the first place
-        if(originalFileReader.getChannel().size()>50000)
-          copyFileWriter.getChannel().transferFrom(originalFileReader.getChannel(),0,originalFileReader.getChannel().size());
+//        if(originalFileReader.getChannel().size()>50000)
+        copyFileWriter.getChannel().transferFrom(originalFileReader.getChannel(),0,originalFileReader.getChannel().size());
+        File47AndFileCopy pair=new File47AndFileCopy(jobName,fileName47,fileName47+"$");
+        dialog.insertNewFileCopy(pair);
       }
       catch(IOException ex)
       {
@@ -500,13 +502,20 @@ class NBOFileHandler extends JPanel {
 
 class File47AndFileCopy
 {
+  private String jobName;
   private String file47;
   private String filecopy;
   
-  File47AndFileCopy(String file_47,String file_copy)
+  File47AndFileCopy(String jobName,String file47,String fileCopy)
   {
-    this.file47=file_47;
-    this.filecopy=file_copy;
+    this.jobName=jobName;
+    this.file47=file47;
+    this.filecopy=fileCopy;
+  }
+  
+  String getJobname()
+  {
+    return this.jobName;
   }
   
   String getFile47()
