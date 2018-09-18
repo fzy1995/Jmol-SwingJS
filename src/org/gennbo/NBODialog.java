@@ -92,7 +92,7 @@ public class NBODialog extends JDialog {
 
   protected JLabel licenseInfo;
 
-  private JButton helpBtn;
+  private JButton helpBtn,helpBtn_M,helpBtn_R,helpBtn_V, helpBtn_S;
 
   private JDialog settingsDialog;
   private JPanel topPanel;
@@ -567,6 +567,7 @@ public class NBODialog extends JDialog {
     GridBagConstraints c = new GridBagConstraints();
     p2.setBorder(BorderFactory.createLineBorder(Color.black));
     JButton btn = new JButton("Model");
+    helpBtn_M = new HelpBtn("model_help.htm");
 
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
@@ -588,7 +589,12 @@ public class NBODialog extends JDialog {
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Create & edit molecular model and input files"),
         c);
-
+    c.gridx = 6;
+    c.gridy = 0;
+    c.gridwidth = 1;
+    c.gridheight = 1; 
+    p2.add(helpBtn_M, c);
+    
     c.gridx = 5;
     c.gridwidth = 1;
     p2.add(Box.createRigidArea(new Dimension(60, 10)), c);
@@ -610,6 +616,7 @@ public class NBODialog extends JDialog {
 
     //RUN/////////////
     btn = new JButton("Run");
+    helpBtn_R = new HelpBtn("run_help.htm");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
     btn.setMinimumSize(new Dimension(150, 30));
@@ -629,6 +636,11 @@ public class NBODialog extends JDialog {
     c.gridy = 2;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Launch NBO analysis for chosen archive file"), c);
+    c.gridx = 6;
+    c.gridy = 2;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    p2.add(helpBtn_R, c);
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setContentType("text/html");
@@ -642,6 +654,7 @@ public class NBODialog extends JDialog {
 
     //VIEW//////////////
     btn = new JButton("View");
+    helpBtn_V = new HelpBtn("view_help.htm");
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -661,6 +674,12 @@ public class NBODialog extends JDialog {
     c.gridy = 4;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Display NBO orbitals in 1D/2D/3D imagery"), c);
+    
+    c.gridx = 6;
+    c.gridy = 4;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    p2.add(helpBtn_V, c);
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430, 60));
@@ -675,6 +694,7 @@ public class NBODialog extends JDialog {
 
     //SEARCH/////////////
     btn = new JButton("Search");
+    helpBtn_S = new HelpBtn("search_help.htm");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
     btn.setMinimumSize(new Dimension(150, 30));
@@ -694,6 +714,11 @@ public class NBODialog extends JDialog {
     c.gridy = 6;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Search NBO output interactively"), c);
+    c.gridx = 6;
+    c.gridy = 6;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    p2.add(helpBtn_S, c);
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430, 60));
@@ -1268,6 +1293,7 @@ public class NBODialog extends JDialog {
     }
     return false;
   }
+  
   void insertNewFileCopy(File47AndFileCopy filePair)
   {
     if(filePair!=null)
