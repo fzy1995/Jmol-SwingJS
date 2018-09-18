@@ -679,26 +679,10 @@ class NBOView {
     postNBO_v(sb, MODE_VIEW_VIDEO, -1, null,"Sending video create command..", null, null);
   }
   
-  class BMP_Files implements Comparable<BMP_Files>
-  {
-    public File file;
-    public String filename;
-    
-    public BMP_Files(File file,String filename)
-    {
-      this.file=file;
-      this.filename=filename;
-    }
-    
-    public int compareTo(BMP_Files other)
-    {
-      return this.filename.compareTo(other.filename);
-    }
-    
-  }
   
   
-  
+  /* find and return all the files with the specified filename in the given directory
+   */
   private File[] finder(String directoryName,String jobstem)
   {
     int counter=0,i;
@@ -716,25 +700,34 @@ class NBOView {
       }
     });
     
-    //sort the files according to their filename
-    ArrayList<BMP_Files> files=new ArrayList<BMP_Files>();
-    for(File file:bmpFiles)
-    {
-      files.add(new BMP_Files(file,file.getName()));
-      counter++;
-    }
-    Collections.sort(files);
+    return bmpFiles;
+  }
+  
+  private File[] sortFilenames(File files[])
+  {
+    int i;
     
-    File bmps[]=new File[counter];
-    for(i=0;i<counter;i++)
+    //sort the files according to their filename
+    ArrayList<BMP_File> sortedFiles=new ArrayList<BMP_File>();
+    
+    ArrayList<String> dummy=new ArrayList<String>();
+    for(i=0;i<files.length;i++)
     {
-      bmps[i]=files.get(i).file;
+      File currentFile=files[i];
+      BMP_File currentBMPFile=new BMP_File(currentFile,currentFile.getName());
+      sortedFiles.add(currentBMPFile);
+    }
+    
+    Collections.sort(sortedFiles);
+    
+    File bmps[]=new File[sortedFiles.size()];
+    for(i=0;i<sortedFiles.size();i++)
+    {
+      bmps[i]=sortedFiles.get(i).getFile();
     }
     
     return bmps;
   }
-  
-  
   
   private void saveVideo()
   { 
@@ -753,14 +746,14 @@ class NBOView {
       return;
     }
     
-    
-    File bmpFiles[]=finder(folder,name);
     int timeBetweenFrameInSecond=frameRate;
     int i;
     GIFWriter writer=null;
     ImageOutputStream output=null;
     
-
+    File files[]=finder(folder,name);
+    File bmpFiles[]=sortFilenames(files);
+    
     int strLength=folder.length();
     if(folder.charAt(strLength-1)!='/')
       folder=folder+"/";
@@ -2555,7 +2548,8 @@ class NBOView {
     return f.exists() && !f.isDirectory();
   }
  
-}
+} 
+///////
 
 
 
@@ -2673,3 +2667,36 @@ class GIFWriter
   
 }
 ////
+
+class BMP_File implements Comparable<BMP_File>
+{
+  private File file;
+  private int fileNum;
+  
+  public BMP_File(File file,String filename)
+  {
+    this.file=file;
+    
+    filename=filename.trim();
+    String splitDot[]=filename.split("\\.");
+    String splitUnderscore[]=splitDot[0].split("_");
+    this.fileNum=Integer.parseInt(splitUnderscore[1]);
+    
+  }
+  
+  public File getFile()
+  {
+    return this.file;
+  }
+  public int getFileNum()
+  {
+    return this.fileNum;
+  }
+  
+  @Override
+  public int compareTo(BMP_File other)
+  {
+    return this.getFileNum()-other.getFileNum();
+  }
+  
+}
