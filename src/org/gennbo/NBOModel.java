@@ -1291,6 +1291,7 @@ class NBOModel {
    * @param ext
    */
   protected void loadModelFromNBO(String path, String fname, String ext) {
+    String ess;
     if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       notFromNBO = true;
       dialog.runScriptQueued("set refreshing false");
@@ -1298,7 +1299,10 @@ class NBOModel {
       dialog.runScriptQueued("set refreshing true");
       return;
     }
-    String ess = getEss(inputFileType, true);
+    if(inputFileType==null)
+      ess=getEss(ext,true);
+    else
+      ess = getEss(inputFileType, true);
     SB sb = new SB();
     if (jtNIHInput != null) {
       jtNIHInput.setText("");
