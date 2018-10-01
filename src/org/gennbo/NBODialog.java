@@ -565,10 +565,11 @@ public class NBODialog extends JDialog {
     helpBtn_Main.setBackground(Color.RED);
     helpBtn_Main.setForeground(Color.white);
     
+    titleAndHelpBtn.add(Box.createRigidArea(new Dimension(195, 5)));
     titleAndHelpBtn.add(lab);
-    titleAndHelpBtn.add(Box.createRigidArea(new Dimension(140, 5)));
+    titleAndHelpBtn.add(Box.createRigidArea(new Dimension(166, 5)));
     titleAndHelpBtn.add(helpBtn_Main);
-    lab.setAlignmentX(0.6f);
+    lab.setAlignmentX(0.5f);
     p.add(titleAndHelpBtn);
     
     

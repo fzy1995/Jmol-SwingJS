@@ -80,7 +80,7 @@ public class NBOService {
   private boolean cantStartServer;  
   private String serverPath;
 
-  private String exeName = "NBOServe";
+  private String exeName = "NBOServe.exe";
   private boolean doConnect;
   
   private boolean isReady;
