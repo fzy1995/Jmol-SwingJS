@@ -92,7 +92,7 @@ public class NBODialog extends JDialog {
 
   protected JLabel licenseInfo;
 
-  private JButton helpBtn,helpBtn_M,helpBtn_R,helpBtn_V, helpBtn_S;
+  private JButton helpBtn,helpBtn_M,helpBtn_R,helpBtn_V, helpBtn_S, helpBtn_Main;
 
   private JDialog settingsDialog;
   private JPanel topPanel;
@@ -554,11 +554,25 @@ public class NBODialog extends JDialog {
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
 
     p.add(b);
+    JPanel titleAndHelpBtn=new JPanel();
+    titleAndHelpBtn.setBackground(Color.WHITE);
+    titleAndHelpBtn.setLayout(new BoxLayout(titleAndHelpBtn, BoxLayout.X_AXIS));
     lab = new JLabel(getName());
     lab.setFont(NBOConfig.nboProTitleFont);
     lab.setForeground(Color.red);
-    p.add(lab);
-    lab.setAlignmentX(0.5f);
+    
+    helpBtn_Main=new HelpBtn("Jmol_NBOPro6_help.htm");
+    helpBtn_Main.setBackground(Color.RED);
+    helpBtn_Main.setForeground(Color.white);
+    
+    titleAndHelpBtn.add(lab);
+    titleAndHelpBtn.add(Box.createRigidArea(new Dimension(140, 5)));
+    titleAndHelpBtn.add(helpBtn_Main);
+    lab.setAlignmentX(0.6f);
+    p.add(titleAndHelpBtn);
+    
+    
+    
     lab = new JLabel("Frank Weinhold, Dylan Phillips, Foo Zhi Yuan, Eric Glendening and Robert Hanson");
     lab.setAlignmentX(0.5f);
     p.add(lab);

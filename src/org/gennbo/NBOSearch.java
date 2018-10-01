@@ -1651,7 +1651,11 @@ class NBOSearch extends NBOView {
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = MODE_SEARCH_LIST_MO;
-    postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
+    
+    if(keywordID==KEYWD_NRT && cmd_basis.equals("r"))
+      postNBO_s(sb, mode, cb, "Getting list " + cmd+"...", false);
+    else
+      postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
   }
 
   /**
