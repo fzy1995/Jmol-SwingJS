@@ -227,7 +227,9 @@ class NBOView {
   
   private boolean file43Exists;
   private boolean file44Exists;
- 
+  //indicates if this module is just being entered. this variable is being used
+  //to not reset camera parameters if user selects new 47 file, as long as user stays in this module
+  private boolean switchModule;
   
   /**
    * reset the arrays of values that will be sent to NBOServe to their default
@@ -290,6 +292,7 @@ class NBOView {
 
     updateViewSettings();
     frameRate=-1;
+    switchModule=true;
     dialog.inputFileHandler.setBrowseEnabled(true);
 
     //    String fileType = dialog.runScriptNow("print _fileType");
@@ -684,9 +687,7 @@ class NBOView {
   /* find and return all the files with the specified filename in the given directory
    */
   private File[] finder(String directoryName,String jobstem)
-  {
-    int counter=0,i;
-    
+  { 
     savevideo_jobstem=jobstem;
     
     File dir=new File(directoryName);
@@ -696,7 +697,31 @@ class NBOView {
       public boolean accept(File dir, String filename)
       {
         String curr_filename=filename.trim();
-        return curr_filename.startsWith(savevideo_jobstem+"_");
+        if(curr_filename.startsWith(savevideo_jobstem+"_") && curr_filename.endsWith(".bmp"))
+        {
+          try
+          {
+            String splitDot[]=curr_filename.split("\\.");
+            if(splitDot.length!=2)
+              return false;
+                  
+            curr_filename=splitDot[0];
+            int counter=Integer.parseInt(curr_filename.substring(savevideo_jobstem.length()+1));
+            if(counter>0)
+              return true;
+            return false;
+
+          }
+          catch(IndexOutOfBoundsException e1)
+          {
+            return false;
+          }
+          catch(NumberFormatException e2)
+          {
+            return false;
+          }
+        }
+        return false;
       }
     });
     
@@ -710,11 +735,10 @@ class NBOView {
     //sort the files according to their filename
     ArrayList<BMP_File> sortedFiles=new ArrayList<BMP_File>();
     
-    ArrayList<String> dummy=new ArrayList<String>();
     for(i=0;i<files.length;i++)
     {
       File currentFile=files[i];
-      BMP_File currentBMPFile=new BMP_File(currentFile,currentFile.getName());
+      BMP_File currentBMPFile=new BMP_File(currentFile,currentFile.getName(),savevideo_jobstem);
       sortedFiles.add(currentBMPFile);
     }
     
@@ -740,7 +764,7 @@ class NBOView {
       dialog.logInfo("Error: Invalid path for gif file", Logger.LEVEL_ERROR);
       return;
     }
-    if(frameRate==-1)
+    else if(frameRate==-1)
     {
       dialog.logInfo("Error: Please select a framerate", Logger.LEVEL_ERROR);
       return;
@@ -753,6 +777,12 @@ class NBOView {
     
     File files[]=finder(folder,name);
     File bmpFiles[]=sortFilenames(files);
+    
+    if(bmpFiles.length==0)
+    {
+      dialog.logInfo("Error: No BMP file with input filename found. Could not create GIF.", Logger.LEVEL_ERROR);
+      return;
+    }
     
     int strLength=folder.length();
     if(folder.charAt(strLength-1)!='/')
@@ -2062,8 +2092,15 @@ class NBOView {
         vectorFields[i] = new JTextField(vecVal[i]);
       for (int i = 0; i < lineFields.length; i++)
         lineFields[i] = new JTextField(lineVal[i]);
-      for (int i = 0; i < camFields.length; i++)
-        camFields[i] = new JTextField(camVal[i]);
+      //fzy: Professor Frank doesn't want the parameter of camera to be reset everytime
+      //a new file is being loaded.
+      if(switchModule)
+      {
+        for (int i = 0; i < camFields.length; i++)
+          camFields[i] = new JTextField(camVal[i]);
+        
+        switchModule=false;
+      }
 
       vecBox.removeAll();
       vecBox.add(new JLabel("Axis: "));
@@ -2673,15 +2710,16 @@ class BMP_File implements Comparable<BMP_File>
   private File file;
   private int fileNum;
   
-  public BMP_File(File file,String filename)
+  public BMP_File(File file,String filename,String jobstem)
   {
     this.file=file;
     
     filename=filename.trim();
     String splitDot[]=filename.split("\\.");
-    String splitUnderscore[]=splitDot[0].split("_");
-    this.fileNum=Integer.parseInt(splitUnderscore[1]);
+    String splittedFilename=splitDot[0];
     
+  
+    this.fileNum=Integer.parseInt(splittedFilename.substring(jobstem.length()+1));
   }
   
   public File getFile()
