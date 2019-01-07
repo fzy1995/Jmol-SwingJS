@@ -1296,6 +1296,43 @@ public class NBODialog extends JDialog {
 
   }
   
+  /*
+   * Converts Unix formatted input file to Windows formatted file for 47 files. Only 47 files
+   */
+  public void convertUnix2Dos(String workingDirectory, String jobstem, String extension)
+  {
+    if(workingDirectory==null || jobstem==null || extension==null || workingDirectory.equals("") || jobstem.equals("") ||extension.equals(""))
+      return;
+
+    if( !extension.equals("47") && !extension.equals("47$") )
+      return;
+    
+    try
+    {
+      String filename=jobstem+"."+extension;
+      String executablePath=nboService.getServerPath(null);
+      Path filePath=Paths.get(workingDirectory,filename);
+      
+      Path unix2dos=Paths.get(executablePath,"unix2dos");
+      
+      Process process=Runtime.getRuntime().exec(unix2dos.toString()+" "+filePath);
+      process.waitFor();
+    }
+    catch(InterruptedException e)
+    {
+      logError("Sleep Interrupted");
+    }
+    catch(IOException ex)
+    {
+      String s = ex.getMessage();
+      System.out.println(s);
+      if (s.contains("error=1455"))
+         s = "Jmol can't do that - low on memory";
+      logError(s);
+    }
+   
+    
+  }
   
   boolean backupFileExists(String jobName)
   {
@@ -1324,6 +1361,7 @@ public class NBODialog extends JDialog {
   void restore47filesFromFileCopy()
   {
     int i;
+    
     FileInputStream sourceFilecopy=null;
     FileOutputStream destinationFile47=null;
     for(i=0;i<filecopy.size();i++)

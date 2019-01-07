@@ -395,9 +395,13 @@ class NBOModel {
               dialog.logError("File not found");
               return false;
             }
-            loadModelFromNBO(newFile.getParent(),
-                (jobStem = NBOUtil.getJobStem(newFile)), NBOUtil.getExt(newFile));
             fullFilePath = newFile.getParent();
+            jobStem=NBOUtil.getJobStem(newFile);
+            
+          //fzy: Professor Frank initially wanted this feature to be added in, but wanted it abandoned later on
+            //because it can't work on large files, which is a mystery (I'm not given any such large files to debug on error)
+//            dialog.convertUnix2Dos(fullFilePath, jobStem, NBOUtil.getExt(newFile));
+            loadModelFromNBO(newFile.getParent(), jobStem, NBOUtil.getExt(newFile));
             dialog.inputFileHandler
                 .setInput(fullFilePath, jobStem, NBOUtil.getExt(newFile));
             

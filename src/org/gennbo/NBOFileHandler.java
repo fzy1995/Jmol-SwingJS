@@ -174,10 +174,16 @@ class NBOFileHandler extends JPanel {
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
+    
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
+    
+    //fzy: Professor Frank initially wanted this feature to be added in, but wanted it abandoned later on
+    //because it can't work on large files, which is a mystery (I'm not given any such large files to debug on error)
+//    dialog.convertUnix2Dos(inputFile.getParent(), NBOUtil.getJobStem(inputFile), NBOUtil.getExt(inputFile));
+    
     if (!useExt.equals("47")) {
       setJobStemAndTextFieldName(NBOUtil.getJobStem(inputFile));
       dialog.modelPanel.loadModelFromNBO(fullFilePath, jobStem, useExt);
@@ -208,6 +214,7 @@ class NBOFileHandler extends JPanel {
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = NBOUtil.getJobStem(inputFile);
+    
     if (dialog.modelOrigin == NBODialog.ORIGIN_NBO_ARCHIVE)
       clearInputFile(true);
     setInput(inputFile.getParent(), jobStem, useExt);
@@ -401,6 +408,7 @@ class NBOFileHandler extends JPanel {
   public String[] update47File(String jobName, String keywords, boolean isRun) {
     if (!useExt.equals("47"))
       return null;
+    
     String fileName47 = inputFile.getAbsolutePath();
     
     File copyFile47=new File(fileName47+"$");
